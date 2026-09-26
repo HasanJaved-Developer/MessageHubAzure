@@ -1,0 +1,17 @@
+flowchart LR
+
+    subgraph API["API Layer"]
+        A[API<br/>Publishes Cache Events]
+    end
+
+    subgraph MQ["RabbitMQ"]
+        X[(Cache Exchange)]
+        Q[(Cache Queue)]
+    end
+
+    subgraph WORKER["Cache Worker"]
+        W[Invalidate Redis Keys]
+    end
+
+    A -->|Publish Event| X
+    X --> Q --> W

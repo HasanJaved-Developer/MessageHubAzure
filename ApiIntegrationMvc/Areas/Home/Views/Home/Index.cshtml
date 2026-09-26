@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@{
+    var msg = TempData["Toast"] as string;
+}
+
+@if (!string.IsNullOrEmpty(msg))
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            toastr.options.closeButton = true;
+            toastr.options.progressBar = true;
+            toastr.success('@msg', 'Success');
+        });
+    </script>
+}

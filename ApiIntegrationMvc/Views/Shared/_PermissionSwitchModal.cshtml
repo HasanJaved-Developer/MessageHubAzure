@@ -1,0 +1,67 @@
+﻿<!-- Modal -->
+<div class="modal fade" id="permModal" tabindex="-1" aria-labelledby="permLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title" id="permLabel"><i class="bi bi-key me-1"></i> Permission Switch</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-grid gap-2">
+                    <button id="btnGrantWeb" class="btn btn-success  btn-sm">Grant WebApp</button>
+                    <button id="btnGrantApi" class="btn btn-primary btn-sm">Grant API</button>
+                    <button id="btnRevokeApi" class="btn btn-warning btn-sm">Revoke API</button>
+                    <button id="btnRevokeBoth" class="btn btn-danger  btn-sm">Revoke Both</button>
+                </div>
+                <hr class="my-2">
+                <div id="permState" class="small text-muted">State: …</div>
+            </div>
+            <div class="modal-footer justify-content-start py-2">
+                <small class="text-muted">Update DB and Invalidate Redis cache.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const call = (op) =>
+        fetch('/Admin/Roles/UpdatePermissions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({op})
+        })
+        .then(r => r.json())
+        .then(d => { toast(d); refreshState(); });
+
+    document.getElementById('btnGrantWeb').onclick  = () => call('grant-webapp');
+    document.getElementById('btnGrantApi').onclick  = () => call('grant-api');
+    document.getElementById('btnRevokeApi').onclick = () => call('revoke-api');
+    document.getElementById('btnRevokeBoth').onclick= () => call('revoke-both');
+
+    async function refreshState() {        
+        const res = await fetch('/Admin/Roles/GetState', {
+          method: 'GET'          
+        });
+        const data = await res.json();
+        console.log("data:", data);
+        console.log(data, typeof data.webapp, typeof data.api);
+
+        document.getElementById('permState').textContent =
+            `WebApp=${data.webapp ? 'On' : 'Off'} · API=${data.api ? 'On' : 'Off'}`;
+    }
+        function toastSuccess(msg) {
+        toastr.options.closeButton = true;
+        toastr.options.timeOut = 3000;
+        toastr.success(msg, "Success");
+    }
+    function toast(d) {
+        // wire your toast lib here
+        // ex: PNotify / toastr / Bootstrap Toast
+        alert(d.message); // temporary for clarity
+        //toastSuccess(d.message);
+    }
+
+    document.addEventListener('shown.bs.modal', refreshState);
+    
+    
+</script>

@@ -1,0 +1,94 @@
+flowchart TB  
+  %% --- Clients ---  
+  Portal[💻 Integration Portal<br/>]:::client
+    
+  %% --- OpenTelemetry & Jaeger (Tracing) ---
+  subgraph OBS[Observability Stack]
+    direction TB
+    OTEL[📡 OpenTelemetry SDK<br/>Export → OTLP]:::otel
+    J_COLLECTOR[(📥 Jaeger Collector<br/>OTLP gRPC :4317)]:::infra
+    J_UI[🧭 Jaeger UI<br/>:16686]:::ui
+    OTEL --> J_COLLECTOR --> J_UI
+  end
+
+ %% --- Message Bus (RabbitMQ + Worker) ---
+  subgraph MSG[Message Bus & Cache Invalidation]
+    direction TB
+    RABBIT[(🐇 RabbitMQ<br/>Message Broker)]:::mq
+    INV_WORKER[⚙️ PermissionInvalidationWorker<br/>Cache Invalidator]:::worker
+    RABBIT --> INV_WORKER
+  end
+
+  %% --- SDKs ---
+  UM_SDK[📦 UserManagement.SDK]:::sdk
+  LOG_SDK[📦 CentralizedLogging.SDK]:::sdk
+
+  %% --- APIs ---
+  UM_API[🔑 User Management API]:::api
+  LOG_API[📝 Centralized Logging API]:::api
+
+  %% --- Contracts ---
+  UM_CONTRACTS[📄 UserManagement.Contracts]:::contract
+  LOG_CONTRACTS[📄 Logging.Contracts]:::contract
+
+  %% --- Databases ---
+  UDB[(🗄️ User DB)]:::db
+  LDB[(🗄️ Logging DB)]:::db
+
+  %% --- Distributed Cache ---
+  DRAGONFLY[(🧠 DragonflyDB<br/>Cache: Tokens · Permissions · Roles)]:::cache
+
+  %% --- Shared Observability Library ---
+  SHARED[🧰 Shared.Observability<br/>Middlewares<br/>ActivityTraceEnricher]:::lib
+
+  %% --- Flows ---
+  %% Clients use SDKs
+  Portal --> UM_SDK --> UM_API
+  Portal --> LOG_SDK --> LOG_API
+  
+  %% SDKs depend on contracts
+  UM_SDK -.-> UM_CONTRACTS
+  LOG_SDK -.-> LOG_CONTRACTS
+
+  %% APIs also follow contracts
+  UM_API -.-> UM_CONTRACTS
+  LOG_API -.-> LOG_CONTRACTS
+
+  %% APIs use DBs
+  UM_API --> UDB
+  LOG_API --> LDB
+
+  %% APIs use DragonflyDB cache
+  UM_API --> DRAGONFLY
+  LOG_API --> DRAGONFLY
+  Portal --> DRAGONFLY
+
+  %% APIs use Shared Library (middlewares + enricher)
+  UM_API -. uses .-> SHARED
+  LOG_API -. uses .-> SHARED
+  Portal -. uses .-> SHARED
+
+  %% APIs emit traces via OTel to Jaeger
+  UM_API -. uses .-> OTEL
+  LOG_API -. uses .-> OTEL
+  Portal -. uses .-> OTEL
+
+  %% User Management API publishes invalidation events to RabbitMQ
+  UM_API --> RABBIT
+
+  %% Worker invalidates cache entries in DragonflyDB
+  INV_WORKER --> DRAGONFLY
+
+  %% --- Styles ---
+  classDef client fill:#f0f8ff,stroke:#007acc,stroke-width:2px,color:#000,font-weight:bold;
+  classDef sdk fill:#fff5e6,stroke:#ff9900,stroke-width:2px,color:#000;
+  classDef api fill:#e6ffe6,stroke:#339933,stroke-width:2px,color:#000;
+  classDef contract fill:#f9f9f9,stroke:#555555,stroke-dasharray:3 3,color:#000;
+  classDef db fill:#fff0f5,stroke:#cc0066,stroke-width:2px,color:#000;
+  classDef cache fill:#f5f0ff,stroke:#7b2cbf,stroke-width:2px,color:#000,font-weight:bold;
+  classDef lib fill:#eef7ff,stroke:#2b6cb0,stroke-width:2px,color:#000;
+  classDef otel fill:#fffbea,stroke:#b7791f,stroke-width:2px,color:#000;
+  classDef infra fill:#f5f5ff,stroke:#6b46c1,stroke-width:2px,color:#000;
+  classDef ui fill:#f0fff4,stroke:#2f855a,stroke-width:2px,color:#000;
+  classDef mq fill:#fffaf0,stroke:#dd6b20,stroke-width:2px,color:#000,font-weight:bold;
+  classDef worker fill:#e6fffa,stroke:#319795,stroke-width:2px,color:#000,font-weight:bold;
