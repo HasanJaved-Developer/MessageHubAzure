@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REPO_SLUG: message-hub
+  REPO_SLUG: message-hub-azure
   PLATFORMS: linux/amd64,linux/arm64
   DOCKERHUB_NAMESPACE: "hasanjaveddeveloper"        # optional mirroring
   PUSH_IMAGES: "true"                                # always push in GitHub CI

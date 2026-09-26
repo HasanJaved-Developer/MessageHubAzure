@@ -3,7 +3,7 @@ name: message-hub-azure-stack-dhub
 services:
   api:
     # ── Docker Hub image
-    image: docker.io/hasanjaveddeveloper/message-hub-azure-api:v1.0.1
+    image: docker.io/hasanjaveddeveloper/message-hub-azure-api:v1.0.0
     container_name: centralized_logging_api
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
@@ -21,7 +21,7 @@ services:
       - ./CentralizedLoggingApi/logs:/app/logs
 
   userapi:
-    image: docker.io/hasanjaveddeveloper/message-hub-azure-userapi:v1.0.1
+    image: docker.io/hasanjaveddeveloper/message-hub-azure-userapi:v1.0.0
     container_name: user_management_api
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
@@ -39,7 +39,7 @@ services:
       - ./UserManagementApi/logs:/app/logs
 
   web:
-    image: docker.io/hasanjaveddeveloper/message-hub-azure-web:v1.0.1
+    image: docker.io/hasanjaveddeveloper/message-hub-azure-web:v1.0.0
     container_name: api_integration_web
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
@@ -60,7 +60,7 @@ services:
         condition: service_started
 
   invalidator:
-    image: docker.io/hasanjaveddeveloper/message-hub-azure-invalidator:v1.0.1
+    image: docker.io/hasanjaveddeveloper/message-hub-azure-invalidator:v1.0.0
     container_name: messagebus_invalidator
     environment:
       - ASPNETCORE_ENVIRONMENT=Production     
