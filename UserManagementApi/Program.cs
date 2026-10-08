@@ -1,3 +1,4 @@
+using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -123,13 +124,33 @@ builder.Services.AddOpenTelemetry()
             o.Protocol = OtlpExportProtocol.Grpc;
         }));
 
-// RabbitMQ Bind options
-builder.Services.Configure<RabbitMqOptions>(
-    builder.Configuration.GetSection("RabbitMq"));
 
-// Register RabbitMQ connection + publisher
-builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
-builder.Services.AddSingleton<IPermissionsEventPublisher, PermissionsEventPublisher>();
+var messagingProvider =
+    builder.Configuration["Messaging:Provider"];
+if (messagingProvider == "RabbitMq")
+{
+    // RabbitMQ Bind options
+    builder.Services.Configure<RabbitMqOptions>(
+        builder.Configuration.GetSection("RabbitMq"));
+
+    // Register RabbitMQ connection + publisher
+    builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
+    builder.Services.AddSingleton<IPermissionsEventPublisher, PermissionsEventPublisher>();
+}
+else if(messagingProvider == "ServiceBus")
+{
+    //Azure Service Bus Options
+    builder.Services.Configure<ServiceBusOptions>(
+        builder.Configuration.GetSection("ServiceBus"));
+
+    var serviceBusConnectionString =
+    builder.Configuration["ServiceBus:ConnectionString"]
+    ?? throw new InvalidOperationException(
+        "Service Bus connection string is not configured.");
+
+    builder.Services.AddSingleton(new ServiceBusClient(serviceBusConnectionString));
+    builder.Services.AddSingleton<IPermissionsEventPublisher, ServiceBusPermissionsEventPublisher>();
+}
 
 var app = builder.Build();
 app.UseSerilogRequestLogging(); // structured request logs
