@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManagementApi.Tests.Int
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserManagementApi.Tests.Unit", "UserManagementApi.Tests.Unit\UserManagementApi.Tests.Unit.csproj", "{E3C71577-54AA-15C4-8A1A-EBA026911BE5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions.Invalidator", "AzureFunctions.Invalidator\AzureFunctions.Invalidator.csproj", "{A41B2662-079C-4D24-A599-14089B16FFF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{E3C71577-54AA-15C4-8A1A-EBA026911BE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3C71577-54AA-15C4-8A1A-EBA026911BE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3C71577-54AA-15C4-8A1A-EBA026911BE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A41B2662-079C-4D24-A599-14089B16FFF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A41B2662-079C-4D24-A599-14089B16FFF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A41B2662-079C-4D24-A599-14089B16FFF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A41B2662-079C-4D24-A599-14089B16FFF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
