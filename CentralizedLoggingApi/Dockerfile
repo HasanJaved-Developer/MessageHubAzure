@@ -10,7 +10,11 @@ COPY CentralizedLoggingApi/CentralizedLoggingApi.csproj CentralizedLoggingApi/
 
 RUN dotnet restore CentralizedLoggingApi/CentralizedLoggingApi.csproj
 
-COPY . .
+COPY CentralizedLogging.Contracts/ CentralizedLogging.Contracts/
+COPY UserManagement.Contracts/ UserManagement.Contracts/
+COPY SharedLibrary/ SharedLibrary/
+COPY CentralizedLoggingApi/ CentralizedLoggingApi/
+
 RUN dotnet publish CentralizedLoggingApi/CentralizedLoggingApi.csproj -c Release -o /app
 
 # Runtime stage
