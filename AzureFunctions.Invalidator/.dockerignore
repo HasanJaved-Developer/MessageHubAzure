@@ -1,0 +1,19 @@
+.git
+**/bin
+**/obj
+**/node_modules
+*.user
+*.suo
+*.log
+*.tmp
+**/*.md
+
+# Azure Functions local configuration
+**/local.settings.json
+
+# Secrets and environment files
+.secrets
+**/.secrets
+**/secrets.json
+**/.env
+**/.env.*
