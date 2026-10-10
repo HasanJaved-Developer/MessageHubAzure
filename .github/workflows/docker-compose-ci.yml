@@ -38,7 +38,101 @@ jobs:
         if: ${{ !env.ACT }}
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
+          
+      - name: Detect Changed Components
+        id: changes
+        shell: bash
+        run: |
+            set -euo pipefail
+
+            CURRENT_TAG="${GITHUB_REF_NAME}"
+
+            PREVIOUS_TAG=$(
+              git tag --merged HEAD \
+                --list 'v*.*.*' \
+                --sort=-version:refname |
+              grep -Fxv "$CURRENT_TAG" |
+              head -n 1 || true
+            )
+
+            if [ -z "$PREVIOUS_TAG" ]; then
+              echo "No previous release found. Building all components."
+              CHANGED_FILES=""
+              BUILD_USERAPI=true
+              BUILD_API=true
+              BUILD_WEB=true
+              BUILD_FUNCTION=true
+            else
+              echo "Comparing $PREVIOUS_TAG → $CURRENT_TAG"
+
+              CHANGED_FILES=$(git diff --name-only "$PREVIOUS_TAG" "$CURRENT_TAG")
+
+              BUILD_USERAPI=false
+              BUILD_API=false
+              BUILD_WEB=false
+              BUILD_FUNCTION=false
+
+              if echo "$CHANGED_FILES" | grep -q '^UserManagementApi/'; then
+                BUILD_USERAPI=true
+              fi
+
+              if echo "$CHANGED_FILES" | grep -q '^CentralizedLoggingApi/'; then
+                BUILD_API=true
+              fi
+
+              if echo "$CHANGED_FILES" | grep -q '^ApiIntegrationMvc/'; then
+                BUILD_WEB=true
+              fi
+
+              if echo "$CHANGED_FILES" | grep -q '^AzureFunctions.Invalidator/'; then
+                BUILD_FUNCTION=true
+              fi
+
+              if echo "$CHANGED_FILES" | grep -q '^SharedLibrary/'; then
+                BUILD_USERAPI=true
+                BUILD_API=true
+                BUILD_WEB=true
+                BUILD_FUNCTION=true
+              fi
+            fi
+
+            echo "userapi=$BUILD_USERAPI" >> "$GITHUB_OUTPUT"
+            echo "api=$BUILD_API" >> "$GITHUB_OUTPUT"
+            echo "web=$BUILD_WEB" >> "$GITHUB_OUTPUT"
+            echo "function=$BUILD_FUNCTION" >> "$GITHUB_OUTPUT"
+
+            echo "User API: $BUILD_USERAPI"
+            echo "Logging API: $BUILD_API"
+            echo "Web: $BUILD_WEB"
+            echo "Azure Function: $BUILD_FUNCTION"
+
+      - name: Select Docker Bake Targets
+        id: targets
+        shell: bash
+        run: |
+          TARGETS=""
+
+          if [ "${{ steps.changes.outputs.userapi }}" = "true" ]; then
+            TARGETS="$TARGETS userapi"
+          fi
+
+          if [ "${{ steps.changes.outputs.api }}" = "true" ]; then
+            TARGETS="$TARGETS api"
+          fi
+
+          if [ "${{ steps.changes.outputs.web }}" = "true" ]; then
+            TARGETS="$TARGETS web"
+          fi
+          
+          if [ "${{ steps.changes.outputs.function }}" = "true" ]; then
+            TARGETS="$TARGETS function-invalidator"
+          fi
+
+          TARGETS="${TARGETS# }"
+
+          echo "Selected Docker Bake targets: $TARGETS"
+          echo "targets=$TARGETS" >> "$GITHUB_OUTPUT"
 
       # ---------- Tooling ----------
       - name: Set up QEMU
@@ -92,7 +186,7 @@ jobs:
             user_tags+=( "ghcr.io/${OWNER_LC}/${REPO_SLUG}/userapi:edge" )
             api_tags+=(  "ghcr.io/${OWNER_LC}/${REPO_SLUG}/api:edge" )
             web_tags+=(  "ghcr.io/${OWNER_LC}/${REPO_SLUG}/web:edge" )
-            invalidator_tags+=( "ghcr.io/${OWNER_LC}/${REPO_SLUG}/invalidator:edge" )
+            invalidator_tags+=( "ghcr.io/${OWNER_LC}/${REPO_SLUG}/function-invalidator:edge" )
           fi
 
           # Master branch -> latest
@@ -100,7 +194,7 @@ jobs:
             user_tags+=( "ghcr.io/${OWNER_LC}/${REPO_SLUG}/userapi:latest" )
             api_tags+=(  "ghcr.io/${OWNER_LC}/${REPO_SLUG}/api:latest" )
             web_tags+=(  "ghcr.io/${OWNER_LC}/${REPO_SLUG}/web:latest" )
-            invalidator_tags+=( "ghcr.io/${OWNER_LC}/${REPO_SLUG}/invalidator:latest" ) 
+            invalidator_tags+=( "ghcr.io/${OWNER_LC}/${REPO_SLUG}/function-invalidator:latest" ) 
           fi
 
           # Release tags -> vX.Y.Z and X.Y (optionally also latest if you want)
@@ -112,7 +206,7 @@ jobs:
             user_tags+=( "ghcr.io/${OWNER_LC}/${REPO_SLUG}/userapi:${ver}" )
             api_tags+=(  "ghcr.io/${OWNER_LC}/${REPO_SLUG}/api:${ver}" )
             web_tags+=(  "ghcr.io/${OWNER_LC}/${REPO_SLUG}/web:${ver}" )
-            invalidator_tags+=( "ghcr.io/${OWNER_LC}/${REPO_SLUG}/invalidator:${ver}" ) 
+            invalidator_tags+=( "ghcr.io/${OWNER_LC}/${REPO_SLUG}/function-invalidator:${ver}" ) 
             
           fi
 
@@ -121,7 +215,7 @@ jobs:
             hub_user=( "${user_tags[@]/#ghcr.io\/${OWNER_LC}\/${REPO_SLUG}\/userapi:/docker.io/${HUB_NS}/${REPO_SLUG}-userapi:}" )
             hub_api=(  "${api_tags[@]/#ghcr.io\/${OWNER_LC}\/${REPO_SLUG}\/api:/docker.io/${HUB_NS}/${REPO_SLUG}-api:}" )
             hub_web=(  "${web_tags[@]/#ghcr.io\/${OWNER_LC}\/${REPO_SLUG}\/web:/docker.io/${HUB_NS}/${REPO_SLUG}-web:}" )
-            hub_invalidator=( "${invalidator_tags[@]/#ghcr.io\/${OWNER_LC}\/${REPO_SLUG}\/invalidator:/docker.io/${HUB_NS}/${REPO_SLUG}-invalidator:}" )
+            hub_invalidator=( "${invalidator_tags[@]/#ghcr.io\/${OWNER_LC}\/${REPO_SLUG}\/function-invalidator:/docker.io/${HUB_NS}/${REPO_SLUG}-function-invalidator:}" )
             user_tags+=( "${hub_user[@]}" )
             api_tags+=(  "${hub_api[@]}" )
             web_tags+=(  "${hub_web[@]}" )
@@ -132,7 +226,7 @@ jobs:
             echo "user_set<<EOF"; add_lines userapi "${user_tags[@]}"; echo "EOF"
             echo "api_set<<EOF";  add_lines api     "${api_tags[@]}";  echo "EOF"
             echo "web_set<<EOF";  add_lines web     "${web_tags[@]}";  echo "EOF"
-            echo "invalidator_set<<EOF"; add_lines invalidator  "${invalidator_tags[@]}"; echo "EOF"
+            echo "invalidator_set<<EOF"; add_lines function-invalidator  "${invalidator_tags[@]}"; echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
       # ---------- GHCR login ----------
@@ -167,8 +261,19 @@ jobs:
         shell: bash
         env:
           DO_PUSH: ${{ env.PUSH_IMAGES == 'true' && env.ALLOW_LOCAL_PUSH == 'true' && 'true' || 'false' }}
+          SELECTED_TARGETS: ${{ steps.targets.outputs.targets }}
         run: |
           set -euo pipefail
+          
+          if [ -z "$SELECTED_TARGETS" ]; then
+              echo "No Docker components changed. Skipping build."
+              exit 0
+          fi
+
+          read -r -a TARGETS <<< "$SELECTED_TARGETS"
+
+          echo "Selected targets: ${TARGETS[*]}"
+          
           COMMON_SET=(
             "--set" "*.platform=${PLATFORMS}"
             "--set" "*.labels.org.opencontainers.image.revision=${GITHUB_SHA}"
@@ -178,10 +283,23 @@ jobs:
           while IFS= read -r l; do COMMON_SET+=( "--set" "$l" ); done <<< "${{ steps.tags.outputs.web_set }}"
           while IFS= read -r l; do COMMON_SET+=( "--set" "$l" ); done <<< "${{ steps.tags.outputs.invalidator_set }}"
 
-          if [ "$DO_PUSH" = "true" ]; then
-            docker buildx bake -f ./docker-bake.hcl "${COMMON_SET[@]}" --push
+
+
+          if [ ${#TARGETS[@]} -eq 0 ]; then
+             echo "No Docker components changed. Skipping build."
+
+          elif [ "$DO_PUSH" = "true" ]; then
+            docker buildx bake -f ./docker-bake.hcl \
+              "${COMMON_SET[@]}" \
+              "${TARGETS[@]}" \
+              --push
+
           else
-            docker buildx bake -f ./docker-bake.hcl "${COMMON_SET[@]}" --load
+            docker buildx bake -f ./docker-bake.hcl \
+              "${COMMON_SET[@]}" \
+              --set "*.platform=linux/amd64" \
+              "${TARGETS[@]}" \
+              --load
           fi
 
       # ---------- GitHub CI: bake action ----------
