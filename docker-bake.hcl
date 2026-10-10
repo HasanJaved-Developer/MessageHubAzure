@@ -8,7 +8,7 @@ variable "REPO_SLUG"     { default = "message-hub-azure" }     // your namespace
 variable "DOCKERHUB_NAMESPACE" { default = "hasanjaveddeveloper" }                  // optional
 
 group "default" {
-  targets = ["userapi", "api", "web", "invalidator"]
+  targets = ["userapi", "api", "web", "function-invalidator"]
 }
 
 /* ---------------------- userapi (UserManagementApi) ---------------------- */
@@ -61,18 +61,18 @@ target "web" {
   }
 }
 
-/* ---------------------- invalidator (MessageBus.Invalidator) ---------------------- */
-target "invalidator" {
+/* ---------------------- invalidator (MessageBusAzure.Invalidator) ---------------------- */
+target "function-invalidator" {
   context    = "."
-  dockerfile = "./MessageBus.Invalidator/Dockerfile"
+  dockerfile = "./AzureFunctions.Invalidator/Dockerfile"
 
   tags = [
-    "${REGISTRY_GHCR}/${OWNER}/${REPO_SLUG}/invalidator:edge"
+    "${REGISTRY_GHCR}/${OWNER}/${REPO_SLUG}/function-invalidator:edge"
   ]
 
   platforms = ["linux/amd64", "linux/arm64"]
   labels = {
     "org.opencontainers.image.source" = "https://github.com/${OWNER}/MessageHubAzure"
-    "org.opencontainers.image.title"  = "invalidator"
+    "org.opencontainers.image.title"  = "function-invalidator"
   }
 }
