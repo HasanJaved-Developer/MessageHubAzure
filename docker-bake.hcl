@@ -22,7 +22,7 @@ target "userapi" {
     "${REGISTRY_GHCR}/${OWNER}/${REPO_SLUG}/userapi:edge"
   ]
 
-  platforms = ["linux/amd64", "linux/arm64"]
+  platforms = ["linux/amd64"]
   labels = {
     "org.opencontainers.image.source" = "https://github.com/${OWNER}/MessageHubAzure"
     "org.opencontainers.image.title"  = "userapi"
@@ -38,7 +38,7 @@ target "api" {
     "${REGISTRY_GHCR}/${OWNER}/${REPO_SLUG}/api:edge"
   ]
 
-  platforms = ["linux/amd64", "linux/arm64"]
+  platforms = ["linux/amd64"]
   labels = {
     "org.opencontainers.image.source" = "https://github.com/${OWNER}/MessageHubAzure"
     "org.opencontainers.image.title"  = "api"
@@ -54,7 +54,7 @@ target "web" {
     "${REGISTRY_GHCR}/${OWNER}/${REPO_SLUG}/web:edge"
   ]
 
-  platforms = ["linux/amd64", "linux/arm64"]
+  platforms = ["linux/amd64"]
   labels = {
     "org.opencontainers.image.source" = "https://github.com/${OWNER}/MessageHubAzure"
     "org.opencontainers.image.title"  = "web"

@@ -15,7 +15,7 @@ concurrency:
 
 env:
   REPO_SLUG: message-hub-azure
-  PLATFORMS: linux/amd64,linux/arm64
+  PLATFORMS: linux/amd64
   DOCKERHUB_NAMESPACE: "hasanjaveddeveloper"        # optional mirroring
   PUSH_IMAGES: "true"                                # always push in GitHub CI
   ALLOW_LOCAL_PUSH: "true"                           # allows push when not running under act
