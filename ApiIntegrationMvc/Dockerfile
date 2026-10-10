@@ -12,7 +12,13 @@ COPY ApiIntegrationMvc/ApiIntegrationMvc.csproj ApiIntegrationMvc/
 
 RUN dotnet restore ApiIntegrationMvc/ApiIntegrationMvc.csproj
 
-COPY . .
+COPY UserManagement.Contracts/ UserManagement.Contracts/
+COPY CentralizedLogging.Contracts/ CentralizedLogging.Contracts/
+COPY UserManagement.Sdk/ UserManagement.Sdk/
+COPY CentralizedLogging.Sdk/ CentralizedLogging.Sdk/
+COPY SharedLibrary/ SharedLibrary/
+COPY ApiIntegrationMvc/ ApiIntegrationMvc/
+
 RUN dotnet publish ApiIntegrationMvc/ApiIntegrationMvc.csproj -c Release -o /app
 
 # ------------ Runtime stage ------------

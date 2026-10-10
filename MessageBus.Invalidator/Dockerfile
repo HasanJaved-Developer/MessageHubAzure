@@ -10,7 +10,9 @@ COPY MessageBus.Invalidator/MessageBus.Invalidator.csproj MessageBus.Invalidator
 RUN dotnet restore MessageBus.Invalidator/MessageBus.Invalidator.csproj
 
 # Copy everything and publish
-COPY . .
+COPY SharedLibrary/ SharedLibrary/
+COPY MessageBus.Invalidator/ MessageBus.Invalidator/
+
 RUN dotnet publish MessageBus.Invalidator/MessageBus.Invalidator.csproj -c Release -o /app
 
 # Runtime stage

@@ -9,7 +9,10 @@ COPY UserManagementApi/UserManagementApi.csproj UserManagementApi/
 
 RUN dotnet restore UserManagementApi/UserManagementApi.csproj
 
-COPY . .
+COPY UserManagement.Contracts/ UserManagement.Contracts/
+COPY SharedLibrary/ SharedLibrary/
+COPY UserManagementApi/ UserManagementApi/
+
 RUN dotnet publish UserManagementApi/UserManagementApi.csproj -c Release -o /app
 
 # Runtime stage
