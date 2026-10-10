@@ -5,6 +5,7 @@
 
 # act local secrets
 .secrets
+.github/act-tag-event.json
 
 # local developer settings power script file
 run-act.ps1
@@ -367,3 +368,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
