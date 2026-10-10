@@ -70,7 +70,7 @@ target "function-invalidator" {
     "${REGISTRY_GHCR}/${OWNER}/${REPO_SLUG}/function-invalidator:edge"
   ]
 
-  platforms = ["linux/amd64", "linux/arm64"]
+  platforms = ["linux/amd64"]
   labels = {
     "org.opencontainers.image.source" = "https://github.com/${OWNER}/MessageHubAzure"
     "org.opencontainers.image.title"  = "function-invalidator"
