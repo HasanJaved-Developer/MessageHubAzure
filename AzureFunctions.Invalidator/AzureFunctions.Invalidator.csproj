@@ -11,8 +11,6 @@
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />		
 		<PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.22.0" />
-	</ItemGroup>
-	<ItemGroup Condition="'$(Configuration)' == 'Release'">
 		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="3.2.0" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.51.0" />
 	</ItemGroup>	

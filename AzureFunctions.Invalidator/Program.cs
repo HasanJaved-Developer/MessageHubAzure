@@ -1,6 +1,4 @@
-#if !DEBUG
 using Microsoft.Azure.Functions.Worker;
-#endif
 using Microsoft.Azure.Functions.Worker.Builder;
 using SharedLibrary.Cache;
 
