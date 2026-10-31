@@ -1,30 +1,29 @@
+#if !DEBUG
+using Microsoft.Azure.Functions.Worker;
+#endif
 using Microsoft.Azure.Functions.Worker.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using SharedLibrary.Cache;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
-builder.ConfigureFunctionsWebApplication();
-
-// Application Insights isn't enabled by default. See https://aka.ms/AAt8mw4.
-// builder.Services
-//     .AddApplicationInsightsTelemetryWorkerService()
-//     .ConfigureFunctionsApplicationInsights();
-
-// CacheAccessProvider constructor currently requires IHttpContextAccessor.
-// The Service Bus-triggered function itself has no HttpContext.
-builder.Services.AddHttpContextAccessor();
-
-// Register Dragonfly / Redis
-var env = builder.Environment.EnvironmentName;
-
-builder.Services.AddRedisCacheSupport(
-    builder.Configuration,
-    $"{env}:");
+// Application Insights
+#if !DEBUG
+builder.Services
+    .AddApplicationInsightsTelemetryWorkerService()
+    .ConfigureFunctionsApplicationInsights();
+#endif
 
 // Register shared cache provider
-builder.Services.AddScoped<ICacheAccessProvider, CacheAccessProvider>();
+builder.Services.AddHttpClient("ApiIntegrationMvc", client =>
+{
+    var baseAddress = builder.Configuration[
+        "ApiIntegrationMvc:BaseAddress"];
 
+    if (string.IsNullOrWhiteSpace(baseAddress))
+        throw new InvalidOperationException(
+            "ApiIntegrationMvc:BaseAddress is missing.");
+
+    client.BaseAddress = new Uri(baseAddress);
+});
 
 builder.Build().Run();
