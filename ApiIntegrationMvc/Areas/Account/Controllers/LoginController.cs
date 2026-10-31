@@ -4,10 +4,14 @@ using CentralizedLogging.Sdk.Abstractions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Amqp.Framing;
 using Microsoft.IdentityModel.Tokens;
 using SharedLibrary.Cache;
+using SharedLibrary.MessageBus;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using UserManagement.Contracts.DTO;
@@ -22,8 +26,9 @@ namespace ApiIntegrationMvc.Areas.Account.Controllers
         private readonly ICacheAccessProvider _cache;
         private readonly IHttpContextAccessor _http;
         private readonly ICentralizedLoggingClient _centralizedlogs;
+        private readonly IConfiguration _configuration;
         public LoginController(IUserManagementClient users, ICentralizedLoggingClient centralizedlogs,
-            ICacheAccessProvider cache, IHttpContextAccessor http) => (_users, _centralizedlogs, _cache, _http) = (users, centralizedlogs, cache, http);
+            ICacheAccessProvider cache, IHttpContextAccessor http, IConfiguration configuration) => (_users, _centralizedlogs, _cache, _http, _configuration) = (users, centralizedlogs, cache, http, configuration);
 
         [HttpGet]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
@@ -102,6 +107,66 @@ namespace ApiIntegrationMvc.Areas.Account.Controllers
                 TempData["Error"] = "Internal Error. Please contact administrator.";
                 return RedirectToAction(nameof(Index));   // ← PRG on failure             
             }
+        }
+
+        [HttpPost]        
+        public async Task<IActionResult> InvalidateCacheApi(CancellationToken ct)
+        {
+            var secret = _configuration["ApiIntegrationMvc__ApiKey"];
+
+            if (string.IsNullOrWhiteSpace(secret))
+                return StatusCode(500);
+
+            Request.EnableBuffering();
+            if (!Request.Headers.TryGetValue("X-Request-Timestamp", out var timestamp) ||
+                !Request.Headers.TryGetValue("X-Request-Signature", out var signature))
+            {
+                return Unauthorized();
+            }
+
+            // Reject requests older than 5 minutes.
+            if (!DateTimeOffset.TryParse(
+                    timestamp,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind,
+                    out var requestTimestamp) ||
+                (DateTimeOffset.UtcNow - requestTimestamp).Duration() > TimeSpan.FromMinutes(5))
+            {
+                return Unauthorized();
+            }
+
+            var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen:true);
+            var requestBody = await reader.ReadToEndAsync(ct);
+            Request.Body.Position = 0;
+
+            var payload = $"{timestamp}:{requestBody}";
+
+            var expectedSignature = HMACSHA256.HashData(
+                Encoding.UTF8.GetBytes(secret),
+                Encoding.UTF8.GetBytes(payload));
+
+            byte[] suppliedSignature;
+
+            try
+            {
+                suppliedSignature = Convert.FromHexString(signature.ToString());
+            }
+            catch (FormatException)
+            {
+                return Unauthorized();
+            }
+
+            if (!CryptographicOperations.FixedTimeEquals(
+                    expectedSignature, suppliedSignature))
+            {
+                return Unauthorized();
+            }
+
+            var role = JsonSerializer.Deserialize<RolePermissionsUpdatedEvent>(requestBody, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true}).Role;
+            var deleted = await _cache.InvalidatePermissionsForRoleAsync(
+                role,
+                ct);
+            return Ok();
         }
 
         private CreateErrorLogDto BuildDto(HttpRequestException ex, string requestPath)
