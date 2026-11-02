@@ -308,7 +308,7 @@ jobs:
         uses: docker/bake-action@v5
         with:
           files: ./docker-bake.hcl
-          targets: ${{ steps.targets.outputs.targets }}
+          targets: ${{ steps.targets.outputs.targets && fromJSON(format('["{0}"]', replace(steps.targets.outputs.targets, ' ', '","'))) || '' }}
           push: ${{ env.PUSH_IMAGES == 'true' }}
           set: |
             *.platform=${{ env.PLATFORMS }}
