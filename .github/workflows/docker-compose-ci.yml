@@ -134,10 +134,10 @@ jobs:
           echo "Selected Docker Bake targets: $TARGETS"
           echo "targets=$TARGETS" >> "$GITHUB_OUTPUT"
           
-          TARGETS_JSON=$(printf '"%s",' $TARGETS)
-          TARGETS_JSON="[${TARGETS_JSON%,}]"
-
-          echo "targets_json=$TARGETS_JSON" >> "$GITHUB_OUTPUT"
+          TARGETS_BAKE=$(printf '%s\n' $TARGETS)
+          echo "targets_bake<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$TARGETS_BAKE" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       # ---------- Tooling ----------
       - name: Set up QEMU
@@ -313,7 +313,7 @@ jobs:
         uses: docker/bake-action@v5
         with:
           files: ./docker-bake.hcl
-          targets: ${{ fromJSON(steps.targets.outputs.targets_json) }}
+          targets: ${{ fromJSON(steps.targets.outputs.targets_bake) }}
           push: ${{ env.PUSH_IMAGES == 'true' }}
           set: |
             *.platform=${{ env.PLATFORMS }}
