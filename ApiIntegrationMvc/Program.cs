@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
@@ -68,17 +69,24 @@ builder.Services.AddAuthorization(options =>
 
 // OpenTelemetry + Jaeger
 builder.Services.AddOpenTelemetry()
+#if !DEBUG
+        .UseAzureMonitor()
+#endif
     .ConfigureResource(r => r.AddService(
         serviceName: "IntegrationPortal", // <- change per project
         serviceVersion: "1.0.0"))
-    .WithTracing(t => t
+    .WithTracing( t => t
         .AddAspNetCoreInstrumentation(o => { o.RecordException = true; })
         .AddHttpClientInstrumentation()
+#if DEBUG
         .AddOtlpExporter(o =>
-        {
+        {            
             o.Endpoint = new Uri($"http://{builder.Configuration["JAEGER_HOST"]}:4317"); // host -> docker            
             o.Protocol = OtlpExportProtocol.Grpc;
-        }));
+        })      
+#endif
+        );
+
 
 builder.Services.AddScoped<IAuthorizationHandler, PermissionHandler>();
 
