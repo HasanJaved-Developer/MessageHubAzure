@@ -25,14 +25,12 @@ namespace AzureFunctions.Invalidator
             new(JsonSerializerDefaults.Web);
 
         public RolePermissionsInvalidator(
-            ILogger<RolePermissionsInvalidator> logger,
-            ICacheAccessProvider cache,
+            ILogger<RolePermissionsInvalidator> logger,            
             IHttpClientFactory httpClientFactory,
             IHostEnvironment environment,
             IConfiguration configuration)
         {
-            _logger = logger;
-            _cache = cache;
+            _logger = logger;            
             _environment = environment;
             _httpClient = httpClientFactory.CreateClient("ApiIntegrationMvc");
             _configuration = configuration;
@@ -68,7 +66,11 @@ namespace AzureFunctions.Invalidator
                         "Unable to deserialize RolePermissionsUpdatedEvent.");
                 }
 
+                #if DEBUG
                 var secret = _configuration["ApiIntegrationMvc__ApiKey"];
+                #else
+                var secret = _configuration["ApiIntegrationMvc:ApiKey"];
+                #endif
                 var timestamp = DateTimeOffset.UtcNow.ToString("O");                
                 var payload = $"{timestamp}:{message.Body.ToString()}";
 
