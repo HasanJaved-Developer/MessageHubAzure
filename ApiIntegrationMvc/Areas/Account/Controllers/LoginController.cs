@@ -112,7 +112,11 @@ namespace ApiIntegrationMvc.Areas.Account.Controllers
         [HttpPost]        
         public async Task<IActionResult> InvalidateCacheApi(CancellationToken ct)
         {
+            #if DEBUG
             var secret = _configuration["ApiIntegrationMvc__ApiKey"];
+            #else
+            var secret = _configuration["ApiIntegrationMvc:ApiKey"];
+            #endif
 
             if (string.IsNullOrWhiteSpace(secret))
                 return StatusCode(500);
