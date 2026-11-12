@@ -87,18 +87,32 @@ A standard flow:
 
 ---
 
-### 📸 Screenshots
-
----
-
-### 🔐 Permission Change Trigger (UI Action That Publishes the Event)
-
-![Permissions](docs/screenshots/permissions.png)
-
 ## 🧩 Azure Function — Processing PermissionInvalidation Messages
 
 ![Cache Invalidation Diagram](docs/cache_invalidation_diagram.png)  
 <sub>[View Mermaid source](docs/cache_invalidation_diagram.mmd)</sub>
+
+---
+## 🚀 Automated Azure Deployment
+
+MessageHubAzure uses GitHub Actions to automate deployments to Azure Container Apps.
+
+The deployment workflow supports selective project builds and deployments by comparing changes against the previous Git tag.
+
+- **Change Detection:** Identifies modified projects by comparing the current release with the previous Git tag.
+
+- **Selective Builds:** Builds only the affected applications (Web App and User API).
+
+- **Automated Deployment with Manual Triggering:** Deploys the selected applications to Azure Container Apps when manually initiated through GitHub Actions.
+
+This avoids unnecessary builds and deployments when a new version contains changes limited to specific applications.
+
+---
+## 📸 Screenshots
+
+### 🔐 Permission Change Trigger (UI Action That Publishes the Event)
+
+![Permissions](docs/screenshots/permissions.png)
 
 ---
 
