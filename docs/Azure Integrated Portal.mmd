@@ -1,0 +1,55 @@
+---
+title: MessageHubAzure – Distributed Cache Invalidation for the Stale Claims Problem
+config:
+  theme: default
+  look: classic
+  layout: dagre  
+---
+    
+flowchart TB
+ subgraph Containers["`**Containers App Environment**`"]
+        WebApp["Web App"]
+        UserApi["User Management Api"]
+        Dragonfly["Dragonfly"]
+        LogApi["Log Api"]    
+        ApplicationInsights["Application Insights"]    
+        Middlewares@{shape: braces, label: "**Middleware:** Ensure permissions in cache 
+        **Middleware:** Authorization check"}    
+        ChangePermissions@{shape: braces, label: "**Change Permissions**"}
+  end
+    Invalidator["Azure Functions (Invalidator)"]
+    SeviceBus["Service Bus (Queue)"]
+    LogDB[("SQL Database: Log DB")]
+    UserDB[("SQL Database: User DB")]
+
+  
+    
+    Middlewares <-. Ensure permissions .-> Dragonfly
+    UserApi <-. Middleware: Auth Check .-> Dragonfly
+    LogApi <-. Middleware: Auth Check .-> Dragonfly
+    WebApp <-. Middleware: Auth Check .-> Dragonfly
+
+    WebApp <-. Middlewares .-> Middlewares
+    Middlewares <-. HttpGet: GetPermissions(int userId) .-> UserApi
+
+    WebApp --> LogApi
+    WebApp --> UserApi
+    LogApi <--> LogDB
+    UserApi <--> UserDB
+
+    WebApp --"`**Logs** <br> Serilog + Application Insights Sink`"-->  ApplicationInsights
+    WebApp --"`**Traces** <br> OpenTelemetry + Azure Monitor Exporter`"-->  ApplicationInsights
+    Invalidator --"`**Traces** <br> Application Insights Worker Service SDK + Functions integration`"-->  ApplicationInsights
+
+    WebApp e1@--> ChangePermissions e2@--> UserApi
+    ChangePermissions e3@-- Message --> SeviceBus e4@-- Integrates with Trigger  --> Invalidator e5@-- Call Invalidate API --> WebApp e6@-- Invalidates Cache --> Dragonfly
+    
+
+    e1@{ animation: fast }
+    e2@{ animation: fast }
+    e3@{ animation: fast }
+    e4@{ animation: fast }
+    e5@{ animation: fast }
+    e6@{ animation: fast }
+    
+    

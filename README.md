@@ -1,29 +1,31 @@
 # 🚀 MessageHubAzure 
 
-[![Build](https://github.com/hasanjaved-developer/MessageHubAzure/actions/workflows/dotnet-tests.yml/badge.svg?branch=v1.0.1)](https://github.com/hasanjaved-developer/MessageHubAzure/actions/workflows/dotnet-tests.yml)
+[![Build](https://github.com/hasanjaved-developer/MessageHubAzure/actions/workflows/dotnet-tests.yml/badge.svg?branch=v1.3.0)](https://github.com/hasanjaved-developer/MessageHubAzure/actions/workflows/dotnet-tests.yml)
 [![codecov](https://codecov.io/gh/hasanjaved-developer/MessageHubAzure/branch/master/graph/badge.svg)](https://codecov.io/gh/hasanjaved-developer/MessageHubAzure)
-[![Docker Compose CI](https://github.com/hasanjaved-developer/MessageHubAzure/actions/workflows/docker-compose-ci.yml/badge.svg)](https://github.com/hasanjaved-developer/MessageHubAzure/actions/workflows/docker-compose-ci.yml)
+[![Docker Compose CI](https://github.com/hasanjaved-developer/MessageHubAzure/actions/workflows/docker-compose-ci.yml/badge.svg?branch=v1.3.0)](https://github.com/hasanjaved-developer/MessageHubAzure/actions/workflows/docker-compose-ci.yml)
 [![License](https://img.shields.io/badge/License-MIT-blue?logo=github)](LICENSE.txt)
-[![Release](https://img.shields.io/badge/release-v1.0.1-blue)](https://github.com/hasanjaved-developer/MessageHubAzure/tags)
+[![Release](https://img.shields.io/badge/release-v1.3.0-blue)](https://github.com/hasanjaved-developer/MessageHubAzure/tags)
 ![Zero Windows Dependencies](https://img.shields.io/badge/Zero%20Windows%20Dependencies-Container%20Ready-blue?logo=linux)
-[![GHCR api](https://img.shields.io/badge/ghcr.io-message--hub%2Fapi-blue?logo=github)](https://ghcr.io/hasanjaved-developer/message-hub-azure/api)
-[![GHCR userapi](https://img.shields.io/badge/ghcr.io-message--hub%2Fuserapi-blue?logo=github)](https://ghcr.io/hasanjaved-developer/message-hub-azure/userapi)
-[![GHCR web](https://img.shields.io/badge/ghcr.io-message--hub%2Fweb-blue?logo=github)](https://ghcr.io/hasanjaved-developer/message-hub-azure/web)
-[![GHCR invalidator](https://img.shields.io/badge/ghcr.io-message--hub%2Finvalidator-blue?logo=github)](https://ghcr.io/hasanjaved-developer/message-hub-azure/invalidator)
+[![GHCR api](https://img.shields.io/badge/ghcr.io-message--hub--azure%2Fapi-blue?logo=github)](https://ghcr.io/hasanjaved-developer/message-hub-azure/api)
+[![GHCR userapi](https://img.shields.io/badge/ghcr.io-message--hub--azure%2Fuserapi-blue?logo=github)](https://ghcr.io/hasanjaved-developer/message-hub-azure/userapi)
+[![GHCR web](https://img.shields.io/badge/ghcr.io-message--hub--azure%2Fweb-blue?logo=github)](https://ghcr.io/hasanjaved-developer/message-hub-azure/web)
+[![GHCR invalidator](https://img.shields.io/badge/ghcr.io-message--hub--azure%2Ffunction--invalidator-blue?logo=github)](https://ghcr.io/hasanjaved-developer/message-hub-azure/function-invalidator)
 
 ### 🐳 Docker Hub Images
 
 | Service | Pulls | Size | Version |
 |----------|-------|------|----------|
-| **API** | [![Pulls](https://img.shields.io/docker/pulls/hasanjaveddeveloper/message-hub-azure-api)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-api) | [![Size](https://img.shields.io/docker/image-size/hasanjaveddeveloper/message-hub-azure-api/v1.0.1)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-api/tags) | [![Version](https://img.shields.io/docker/v/hasanjaveddeveloper/message-hub-azure-api?sort=semver)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-api/tags) |
-| **User API** | [![Pulls](https://img.shields.io/docker/pulls/hasanjaveddeveloper/message-hub-azure-userapi)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-userapi) | [![Size](https://img.shields.io/docker/image-size/hasanjaveddeveloper/message-hub-azure-userapi/v1.0.1)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-userapi/tags) | [![Version](https://img.shields.io/docker/v/hasanjaveddeveloper/message-hub-azure-userapi?sort=semver)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-userapi/tags) |
-| **Web (Portal)** | [![Pulls](https://img.shields.io/docker/pulls/hasanjaveddeveloper/message-hub-azure-web)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-web) | [![Size](https://img.shields.io/docker/image-size/hasanjaveddeveloper/message-hub-azure-web/v1.0.1)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-web/tags) | [![Version](https://img.shields.io/docker/v/hasanjaveddeveloper/message-hub-azure-web?sort=semver)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-web/tags) |
-| **Invalidator** | [![Pulls](https://img.shields.io/docker/pulls/hasanjaveddeveloper/message-hub-azure-invalidator)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-invalidator) | [![Size](https://img.shields.io/docker/image-size/hasanjaveddeveloper/message-hub-azure-invalidator/v1.0.1)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-invalidator/tags) | [![Version](https://img.shields.io/docker/v/hasanjaveddeveloper/message-hub-azure-invalidator?sort=semver)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-invalidator/tags) |
+| **API** | [![Pulls](https://img.shields.io/docker/pulls/hasanjaveddeveloper/message-hub-azure-api)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-api) | [![Size](https://img.shields.io/docker/image-size/hasanjaveddeveloper/message-hub-azure-api/v1.2.0)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-api/tags) | [![Version](https://img.shields.io/docker/v/hasanjaveddeveloper/message-hub-azure-api?sort=semver)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-api/tags) |
+| **User API** | [![Pulls](https://img.shields.io/docker/pulls/hasanjaveddeveloper/message-hub-azure-userapi)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-userapi) | [![Size](https://img.shields.io/docker/image-size/hasanjaveddeveloper/message-hub-azure-userapi/v1.2.0)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-userapi/tags) | [![Version](https://img.shields.io/docker/v/hasanjaveddeveloper/message-hub-azure-userapi?sort=semver)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-userapi/tags) |
+| **Web (Portal)** | [![Pulls](https://img.shields.io/docker/pulls/hasanjaveddeveloper/message-hub-azure-web)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-web) | [![Size](https://img.shields.io/docker/image-size/hasanjaveddeveloper/message-hub-azure-web/v1.3.0)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-web/tags) | [![Version](https://img.shields.io/docker/v/hasanjaveddeveloper/message-hub-azure-web?sort=semver)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-web/tags) |
+| **Function-Invalidator** | [![Pulls](https://img.shields.io/docker/pulls/hasanjaveddeveloper/message-hub-azure-function-invalidator)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-function-invalidator) | [![Size](https://img.shields.io/docker/image-size/hasanjaveddeveloper/message-hub-azure-function-invalidator/v1.3.0)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-function-invalidator/tags) | [![Version](https://img.shields.io/docker/v/hasanjaveddeveloper/message-hub-azure-function-invalidator?sort=semver)](https://hub.docker.com/r/hasanjaveddeveloper/message-hub-azure-function-invalidator/tags) |
 
 
-**MessageBus** is a lightweight RabbitMQ-powered message pipeline focused on **event-driven cache invalidation** in .NET applications.
+**MessageBus** is a lightweight, Azure-integrated message pipeline focused on **event-driven cache invalidation** in .NET applications.
 
-It provides a clean pattern for publishing events from APIs after completing database updates, and processing those events asynchronously using independent worker services that connect to Dragonfly/Redis.
+It provides a clean pattern for publishing events from APIs after completing database updates to an **Azure Service Bus queue**, and processing those events asynchronously using independent Azure Function worker.
+
+The worker invokes the Web API's cache invalidation endpoint, which removes stale keys from the distributed cache (Dragonfly/Redis).
 
 This approach keeps APIs fast and responsive while ensuring cache consistency across services.
 
@@ -34,27 +36,29 @@ The worker’s responsibility is only to remove stale keys. Any pre-warm logic (
 ---
 
 ## 🔧 Features
-### ✔️ Event Bus Abstraction
+### ✔️ Azure Service Bus Messaging
 
-A minimal IEventBus interface with a RabbitMQ implementation supporting:
+An event-publishing pattern using Azure Service Bus Queue supporting:
 
-durable exchanges
+- Asynchronous message delivery
 
-routing keys
+- Queue-based message processing
 
-persistent messages
+- JSON serialization
 
-JSON serialization
+- Decoupled event publishing and consumption
 
 ### ✔️ Cache Invalidation Worker
 
-A background worker that listens to specific events and:
+An Azure Function worker triggered by Azure Service Bus messages that:
 
-receives an event from RabbitMQ
+- Receives cache invalidation events from Azure Service Bus
 
-invalidates related keys in Redis/Dragonfly
+- Invokes the Web API's cache invalidation endpoint
 
-(optionally) logs the invalidation action
+- Removes stale keys from Dragonfly/Redis through the Web API
+
+- Optionally logs the invalidation action
 
 The worker runs independently and never blocks the API.
 
@@ -62,33 +66,24 @@ The worker runs independently and never blocks the API.
 
 A standard flow:
 
-API completes database update
+1. API completes database update
 
-API publishes a cache-related event
+2. API publishes a cache-related event
 
-RabbitMQ routes the event to a queue
+3. Azure Service Bus delivers the message to a queue.
 
-Cache worker consumes the event
+4. Azure Function consumes the message.
 
-Worker removes the relevant keys in Redis
+5. Function invokes the Web API's cache invalidation endpoint.
 
----
-
-## 🐇 RabbitMQ Management Dashboard
-
-Open RabbitMQ Management Dashboard:
-
-http://localhost:15672
-
-
-(default credentials: rabbit / rabbit)
+6. Web API removes the relevant keys from Dragonfly/Redis.
 
 ---
 
 ## 🧱 Architecture Snapshot
 
-![Integration Portal Architecture](docs/integration_portal_architecture.png)  
-<sub>[View Mermaid source](docs/integration_portal_architecture.mmd)</sub>
+![Integration Portal Architecture](docs/Azure%20Integrated%20Portal.svg)  
+<sub>[View Mermaid source](docs/Azure%20Integrated%20Portal.mmd)</sub>
 
 ---
 
@@ -100,11 +95,7 @@ http://localhost:15672
 
 ![Permissions](docs/screenshots/permissions.png)
 
-### 📨 RabbitMQ — Permission Invalidation Message Received
-
-![Permissions](docs/screenshots/rabbitmq.png)
-
-## 🧩 Worker Process — Handling PermissionInvalidation Messages
+## 🧩 Azure Function — Processing PermissionInvalidation Messages
 
 ![Cache Invalidation Diagram](docs/cache_invalidation_diagram.png)  
 <sub>[View Mermaid source](docs/cache_invalidation_diagram.mmd)</sub>

@@ -1,17 +1,24 @@
+
 flowchart LR
 
     subgraph API["API Layer"]
         A[API<br/>Publishes Cache Events]
     end
 
-    subgraph MQ["RabbitMQ"]
-        X[(Cache Exchange)]
-        Q[(Cache Queue)]
+    subgraph ASB["Azure Service Bus"]
+        Q[(Cache Invalidation Queue)]
     end
 
-    subgraph WORKER["Cache Worker"]
-        W[Invalidate Redis Keys]
+    subgraph WORKER["Azure Function"]
+        W[Consumes Cache Event<br/>Invokes Web API]
     end
 
-    A -->|Publish Event| X
-    X --> Q --> W
+    subgraph CACHE["Web API / Distributed Cache"]
+        C[Cache Invalidation Endpoint]
+        R[(Dragonfly / Redis)]
+    end
+
+    A -->|Publish Event| Q
+    Q -->|Service Bus Trigger| W
+    W -->|HTTP Request| C
+    C -->|Remove Stale Keys| R
